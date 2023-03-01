@@ -90,7 +90,8 @@ typedef enum{
     UartB,
     Rtt0,
     Cgo,
-    ModbusBuffer
+    ModbusBuffer,
+    Raw,
 } TriceWriteDevice_t;
 
 //! Variadic macros (https://github.com/pfultz2/Cloak/wiki/C-Preprocessor-tricks,-tips,-and-idioms)
@@ -333,6 +334,17 @@ unsigned TriceOutDepthUartB( void );
 #endif
 
 unsigned TriceOutDepth( void );
+//
+///////////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////////
+// Raw interface
+//
+
+typedef void(TRICE_RAW_CALLBACK)(uint8_t *buf, size_t len);
+void registerRawCallback(TRICE_RAW_CALLBACK *callback);
+void unregisterRawCallback();
+
 //
 ///////////////////////////////////////////////////////////////////////////////
 

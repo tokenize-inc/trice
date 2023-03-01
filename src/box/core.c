@@ -26,6 +26,7 @@ int triceCommandFlag = 0; // updated
 
 unsigned triceDepthMax = 0; //!< triceDepthMax is a diagnostics value usable to optimize buffer size.
 
+TRICE_RAW_CALLBACK *triceRawCallback = NULL; //!< triceRawCallback is called, when a trice message is received.
 
 #if TRICE_CYCLE_COUNTER == 1
 uint8_t  TriceCycle = 0xc0; //!< TriceCycle is increased and transmitted with each trice message, if enabled.
@@ -191,6 +192,13 @@ void TriceWriteDevice( TriceWriteDevice_t device, uint8_t *buf, size_t len ){
         }
             break;
 #endif
+        case Raw: 
+        {
+            if( triceRawCallback ) {
+                triceRawCallback( buf, len );
+            }
+        }
+            break;
         default:
             break;
     }
@@ -249,6 +257,8 @@ void TriceOut( uint32_t* tb, size_t tLen ){
     #ifdef TRICE_LOG_OVER_MODBUS_FUNC24_ALSO
         TriceWriteDevice( ModbusBuffer, enc, encLen );
     #endif
+
+    TriceWriteDevice( Raw, enc, encLen );
 }
 
 #if defined( TRICE_UARTA ) && !defined( TRICE_HALF_BUFFER_SIZE ) // direct out to UART
@@ -390,4 +400,10 @@ unsigned TriceOutDepth( void ){
     return depth;
 }
 
+void registerRawCallback(TRICE_RAW_CALLBACK *callback) {
+    triceRawCallback = callback;
+}
 
+void unregisterRawCallback() {
+    triceRawCallback = NULL;
+}
