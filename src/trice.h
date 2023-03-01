@@ -380,9 +380,9 @@ void XTEAInitTable(void);
 
 //! TRICE_VARIABLE_ARGUMENTS concatenates TRICE_ with the result of COUNT_ARGUMENTS to produce something like TRICE_2 which takes a printf-format and two arguments.
 #define TRICE( tid, fmt, ...) CONCAT2(TRICE_, COUNT_ARGUMENTS(__VA_ARGS__))(tid, fmt, ##__VA_ARGS__)
-#define TRice( tid, fmt, ...) CONCAT2(TRice_, COUNT_ARGUMENTS(__VA_ARGS__))(tid, fmt, ##__VA_ARGS__)
-#define Trice( tid, fmt, ...) CONCAT2(Trice_, COUNT_ARGUMENTS(__VA_ARGS__))(tid, fmt, ##__VA_ARGS__)
-#define trice( tid, fmt, ...) CONCAT2(trice_, COUNT_ARGUMENTS(__VA_ARGS__))(tid, fmt, ##__VA_ARGS__)
+// #define TRice( tid, fmt, ...) CONCAT2(TRice_, COUNT_ARGUMENTS(__VA_ARGS__))(tid, fmt, ##__VA_ARGS__)
+// #define Trice( tid, fmt, ...) CONCAT2(Trice_, COUNT_ARGUMENTS(__VA_ARGS__))(tid, fmt, ##__VA_ARGS__)
+// #define trice( tid, fmt, ...) CONCAT2(trice_, COUNT_ARGUMENTS(__VA_ARGS__))(tid, fmt, ##__VA_ARGS__)
 
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -432,9 +432,9 @@ static inline uint64_t aDouble( double x ){
 //
 
 #define TRICE_0  TRICE0  //!< Only the format string without parameter values.
-#define TRice_0  TRice0  //!< Only the format string without parameter values.
-#define Trice_0  Trice0  //!< Only the format string without parameter values.
-#define trice_0  trice0  //!< Only the format string without parameter values.
+// #define TRice_0  TRice0  //!< Only the format string without parameter values.
+// #define Trice_0  Trice0  //!< Only the format string without parameter values.
+// #define trice_0  trice0  //!< Only the format string without parameter values.
 
 #ifndef TRICE_N
 //! TRICE_N writes id and buffer of size len.
@@ -502,7 +502,7 @@ extern const int TriceTypeX0;
 //! Id writes 14-bit id with 10 as 2 most significant bits two times, followed by a 16-bit stamp.
 //! 10iiiiiiI 10iiiiiiI | TT (NC) | ...
 //! 8000 = 1000 0000 0000 0000
-#define Id(n) { uint16_t ts = TriceStamp16(); TRICE_PUT((0x80008000|((n)<<16)|(n))); TRICE_PUT16(ts); }
+#define Id(n) ID(n)
 
 //! id writes 14-bit id with 01 as 2 most significant bits, followed by no stamp.
 //! 01iiiiiiI (NC) | ...
