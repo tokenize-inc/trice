@@ -1,0 +1,7 @@
+.idea/
+.github/
+.code_snippets/
+.vscode/
+.git/
+build/
+docker/Dockerfile
