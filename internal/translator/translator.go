@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"math"
 	"os"
 	"os/signal"
 	"strings"
@@ -149,7 +150,7 @@ func decodeAndComposeLoop(w io.Writer, sw *emitter.TriceLineComposer, dec decode
 		if n == 0 {
 			if (receiver.Port == "FILEBUFFER" || receiver.Port == "BUFFER") /*&& err == io.EOF*/ && time.Since(bufferReadStartTime) > 100*time.Millisecond { // do not wait if a predefined buffer
 				if len(sw.Line) > 0 {
-					_, _ = sw.Write([]byte(`\n`)) // add newline as line end to display any started line
+					_, _ = sw.Write([]byte(`\n`), 0) // add newline as line end to display any started line
 				}
 				msg.OnErr(err)
 				return io.EOF
@@ -178,9 +179,12 @@ func decodeAndComposeLoop(w io.Writer, sw *emitter.TriceLineComposer, dec decode
 				logLineStart = true
 			}
 
+			var padding = 0;
+
 			if logLineStart && id.LIFnJSON != "off" && id.LIFnJSON != "none" {
 				s := locationInformation(decoder.LastTriceID, li)
-				_, err := sw.Write([]byte(s))
+				padding += int(math.Max(0, float64(len(s) - 5)));
+				_, err := sw.Write([]byte(s), 0)
 				msg.OnErr(err)
 			}
 
@@ -238,20 +242,24 @@ func decodeAndComposeLoop(w io.Writer, sw *emitter.TriceLineComposer, dec decode
 						s = fmt.Sprintf(decoder.TargetStamp0)
 					}
 				}
-				_, err := sw.Write([]byte(s))
+				_, err := sw.Write([]byte(s), 0)
+				padding += int(math.Max(0, float64(len(s) - 4)));
 				msg.OnErr(err)
-				_, err = sw.Write([]byte("default: "))
+				_, err = sw.Write([]byte("default: "), 0)
 				msg.OnErr(err)
 			}
 			// write ID only if enabled and line start.
 			if logLineStart && decoder.ShowID != "" {
 				s := fmt.Sprintf(decoder.ShowID, decoder.LastTriceID)
-				_, err := sw.Write([]byte(s))
+				_, err := sw.Write([]byte(s), 0)
 				msg.OnErr(err)
-				_, err = sw.Write([]byte("default: ")) // add space as separator
+				_, err = sw.Write([]byte("default: "), 0) // add space as separator
 				msg.OnErr(err)
+
+				padding += int(math.Max(0, float64(len(s) - 5)));
 			}
-			_, err := sw.Write(b[:n])
+
+			_, err := sw.Write(b[:n], padding)
 			msg.OnErr(err)
 		}
 

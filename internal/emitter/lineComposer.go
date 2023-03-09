@@ -48,9 +48,9 @@ func (p *TriceLineComposer) timestamp() string {
 }
 
 // Write treats received buffer as a string.
-func (p *TriceLineComposer) Write(b []byte) (n int, err error) {
+func (p *TriceLineComposer) Write(b []byte, padding int) (n int, err error) {
 	s := string(b)
-	return p.WriteString(s)
+	return p.WriteString(s, padding)
 }
 
 // WriteString implements the io.StringWriter interface. The triceLineComposer can use it.
@@ -61,7 +61,7 @@ func (p *TriceLineComposer) Write(b []byte) (n int, err error) {
 // If s ends with newline it is added to p.line and also the suffix is added to p.line and pline is written to p.lw.
 // If s contains several newlines it is split there and the substrings are handled accordingly.
 // That means it writes internally a separate line for each substring (in s) ending with a newline.
-func (p *TriceLineComposer) WriteString(s string) (n int, err error) {
+func (p *TriceLineComposer) WriteString(s string, padding int) (n int, err error) {
 	n = len(s)
 	if n == 0 {
 		return
@@ -97,7 +97,7 @@ func (p *TriceLineComposer) WriteString(s string) (n int, err error) {
 	ts := p.timestamp()
 	for _, sx := range ss {
 		if len(p.Line) == 0 && 0 < lineEndCount { // start new line && and complete line
-			p.Line = append(p.Line, ts, p.prefix, sx, p.suffix)
+			p.Line = append(p.Line, ts, p.prefix, strings.Repeat(" ", padding), sx, p.suffix)
 			p.completeLine()
 			lineEndCount--
 		} else if len(p.Line) == 0 && lineEndCount == 0 { // start new line
