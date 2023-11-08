@@ -27,6 +27,7 @@ int triceCommandFlag = 0; // updated
 unsigned triceDepthMax = 0; //!< triceDepthMax is a diagnostics value usable to optimize buffer size.
 
 TRICE_RAW_CALLBACK *triceRawCallback = NULL; //!< triceRawCallback is called, when a trice message is received.
+TRICE_RAW_DEPTH *triceRawDepth = NULL;
 
 #if TRICE_CYCLE_COUNTER == 1
 uint8_t  TriceCycle = 0xc0; //!< TriceCycle is increased and transmitted with each trice message, if enabled.
@@ -396,6 +397,10 @@ unsigned TriceOutDepth( void ){
         d = TriceOutDepthCGO();
         depth = d > depth ? d : depth;
     #endif
+    if (triceRawDepth) {
+        d = triceRawDepth();
+        depth = d > depth ? d : depth;
+    }
     depth = d > depth ? d : depth;
     return depth;
 }
@@ -406,4 +411,12 @@ void registerRawCallback(TRICE_RAW_CALLBACK *callback) {
 
 void unregisterRawCallback() {
     triceRawCallback = NULL;
+}
+
+void registerRawDepth(TRICE_RAW_DEPTH *callback) {
+    triceRawDepth = callback;
+}
+
+void unregisterRawDepth() {
+    triceRawDepth = NULL;
 }
