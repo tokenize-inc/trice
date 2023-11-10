@@ -680,7 +680,7 @@ unsigned TriceOutDepthUartB( void );
 // Raw interface
 //
 
-typedef void(TRICE_RAW_CALLBACK)(uint8_t *buf, size_t len);
+typedef void(TRICE_RAW_CALLBACK)(uint8_t const *buf, size_t len);
 void registerRawCallback(TRICE_RAW_CALLBACK *callback);
 void unregisterRawCallback();
 
