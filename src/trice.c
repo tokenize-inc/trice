@@ -45,6 +45,8 @@ char triceCommandBuffer[TRICE_COMMAND_SIZE_MAX+1]; // with terminating 0
 //! triceCommandFlag ist set, when a command was received completely.
 int triceCommandFlag = 0; // updated
 
+TRICE_RAW_CALLBACK *triceRawCallback = NULL; //!< triceRawCallback is called, when a trice message is received.
+
 #if TRICE_CYCLE_COUNTER == 1
 
 //! TriceCycle is increased and transmitted with each trice message, if enabled.
@@ -314,6 +316,12 @@ static void TriceWriteDeviceRtt0( uint8_t const * enc, size_t encLen ){
 
 #endif // (TRICE_SEGGER_RTT_8BIT_DIRECT_WRITE == 1) || (TRICE_SEGGER_RTT_8BIT_DEFERRED_WRITE == 1) || (TRICE_SEGGER_RTT_ROUTED_8BIT_DIRECT_WRITE == 1)
 
+static void TriceWriteDeviceRaw( uint8_t const * enc, size_t encLen ){
+    if( triceRawCallback ) {
+        triceRawCallback( enc, encLen );
+    }
+}
+
 #if TRICE_SEGGER_RTT_32BIT_DIRECT_WRITE == 1
 //! SEGGER_Write_RTT0_NoCheck32 was derived from SEGGER_RTT.c version 7.60g function _WriteNoCheck for speed reasons. If using a different version please review the code first.
 static void SEGGER_Write_RTT0_NoCheck32( const uint32_t* pData, unsigned NumW ) {
@@ -411,6 +419,9 @@ void TriceNonBlockingDirectWrite( uint32_t* triceStart, unsigned wordCount ){
         #if defined(TRICE_CGO)
             TriceWriteDeviceCgo( (uint8_t*)triceStart, wordCount<<2 );
         #endif
+            
+            TriceWriteDeviceRaw( (uint8_t*)triceStart, wordCount<<2 );
+        
     #else // #if (TRICE_DIRECT_OUT_FRAMING == TRICE_FRAMING_NONE) 
         #if (TRICE_DIRECT_OUTPUT_WITH_ROUTING == 1) 
 
@@ -437,6 +448,8 @@ void TriceNonBlockingDirectWrite( uint32_t* triceStart, unsigned wordCount ){
             #ifdef TRICE_CGO
                 TriceWriteDeviceCgo( enc, encLen );
             #endif
+
+                TriceWriteDeviceRaw( enc, encLen );
 
         #else // #if (TRICE_DIRECT_OUTPUT_WITH_ROUTING == 1) 
               #error unexpected configuration
@@ -472,6 +485,9 @@ void TriceNonBlockingDeferredWrite( int triceID, uint8_t const * enc, size_t enc
     #ifdef TRICE_CGO
         TriceWriteDeviceCgo( enc, encLen );
     #endif
+
+        TriceWriteDeviceRaw( enc, encLen );
+        
     #if (TRICE_SEGGER_RTT_8BIT_DEFERRED_WRITE == 1)
         #if defined(TRICE_SEGGER_RTT_8BIT_DEFERRED_WRITE_MIN_ID) && defined(TRICE_SEGGER_RTT_8BIT_DEFERRED_WRITE_MAX_ID)
         if( (TRICE_SEGGER_RTT_8BIT_DEFERRED_WRITE_MIN_ID < triceID) && (triceID < TRICE_SEGGER_RTT_8BIT_DEFERRED_WRITE_MAX_ID) )
@@ -608,4 +624,12 @@ unsigned TriceOutDepth( void ){
     #endif
     depth = d > depth ? d : depth;
     return depth;
+}
+
+void registerRawCallback(TRICE_RAW_CALLBACK *callback) {
+    triceRawCallback = callback;
+}
+ 
+void unregisterRawCallback() {
+    triceRawCallback = NULL;
 }
