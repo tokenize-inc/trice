@@ -684,6 +684,10 @@ typedef void(TRICE_RAW_CALLBACK)(uint8_t *buf, size_t len);
 void registerRawCallback(TRICE_RAW_CALLBACK *callback);
 void unregisterRawCallback();
 
+typedef unsigned(TRICE_RAW_DEPTH)(void);
+void registerRawDepth(TRICE_RAW_DEPTH *callback);
+void unregisterRawDepth();
+
 //
 ///////////////////////////////////////////////////////////////////////////////
 

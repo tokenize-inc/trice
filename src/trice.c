@@ -46,6 +46,7 @@ char triceCommandBuffer[TRICE_COMMAND_SIZE_MAX+1]; // with terminating 0
 int triceCommandFlag = 0; // updated
 
 TRICE_RAW_CALLBACK *triceRawCallback = NULL; //!< triceRawCallback is called, when a trice message is received.
+TRICE_RAW_DEPTH *triceRawDepth = NULL;
 
 #if TRICE_CYCLE_COUNTER == 1
 
@@ -622,6 +623,10 @@ unsigned TriceOutDepth( void ){
         d = TriceOutDepthCGO();
         depth = d > depth ? d : depth;
     #endif
+    if (triceRawDepth) {
+        d = triceRawDepth();
+        depth = d > depth ? d : depth;
+    }        
     depth = d > depth ? d : depth;
     return depth;
 }
@@ -632,4 +637,12 @@ void registerRawCallback(TRICE_RAW_CALLBACK *callback) {
  
 void unregisterRawCallback() {
     triceRawCallback = NULL;
+}
+
+void registerRawDepth(TRICE_RAW_DEPTH *callback) {
+    triceRawDepth = callback;
+}
+
+void unregisterRawDepth() {
+    triceRawDepth = NULL;
 }
