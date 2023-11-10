@@ -805,7 +805,7 @@ static inline uint64_t aDouble( double x ){
     uint32_t limit = TRICE_SINGLE_MAX_SIZE-8; /* 8 = head + max timestamp size --> todo: consider 64-bit stamp! */ \
     uint32_t len_ = n; /* n could be a constant */ \
     if( len_ > limit ){ \
-        TRICE32( id( 5150), "wrn:Transmit buffer truncated from %u to %u\n", len_, limit ); \
+        TRICE32( ID( 5150), "wrn:Transmit buffer truncated from %u to %u\n", len_, limit ); \
         len_ = limit; \
     } \
     TRICE_ENTER tid; \
@@ -859,7 +859,7 @@ static inline uint64_t aDouble( double x ){
 //! id writes 14-bit id with 01 as 2 most significant bits, followed by no stamp.
 //! 01iiiiiiI (NC) | ...
 //! 4000 = 0100 0000 0000 0000
-#define id(n) TRICE_PUT16( 0x4000|(n));
+// #define id(n) TRICE_PUT16( 0x4000|(n));
 
 //! iD is just a code parsing helper.
 #define iD(n) (n)
